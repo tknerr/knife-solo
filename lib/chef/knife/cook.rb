@@ -59,7 +59,7 @@ class Chef
       def check_syntax
         ui.msg('Checking cookbook syntax...')
         chefignore.remove_ignores_from(Dir["**/*.rb"]).each do |recipe|
-          ok = system "ruby -c #{recipe} >/dev/null 2>&1"
+          ok = system "ruby -c #{recipe} >NUL 2>&1"
           raise "Syntax error in #{recipe}" if not ok
         end
 
@@ -102,13 +102,13 @@ class Chef
       end
 
       def rsync_kitchen
-        system! %Q{rsync -rl --rsh="ssh #{ssh_args}" --delete #{rsync_exclude.collect{ |ignore| "--exclude #{ignore} " }.join} ./ :#{adjust_rsync_path(chef_path)}}
+        system! %Q{pscp -scp -r -pw #{password} ./ #{ssh_args}:#{adjust_rsync_path(chef_path)}}
       end
 
       def add_patches
         run_portable_mkdir_p(patch_path)
         Dir[Pathname.new(__FILE__).dirname.join("patches", "*.rb")].each do |patch|
-          system! %Q{rsync -rl --rsh="ssh #{ssh_args}" #{patch} :#{adjust_rsync_path(patch_path)}}
+          system! %Q{pscp -scp -r -pw #{password} #{patch} #{ssh_args}:#{adjust_rsync_path(patch_path)}}
         end
       end
 
