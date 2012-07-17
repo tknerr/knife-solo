@@ -14,7 +14,7 @@ module KnifeSolo::Bootstraps
     end
 
     def http_client_get_url(url)
-      "wget -LO #{url}"
+      "wget #{url}"
     end
 
     def zypper_gem_install
